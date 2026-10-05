@@ -1,6 +1,5 @@
 import os
-
-# User must pass the project folder name
+from tkinter import filedialog
 
 class ProjectPaths():
     def get_project_root(self, main_dir: str):
@@ -12,14 +11,25 @@ class ProjectPaths():
                 project_root = current_directory
                 print(f"Project root found at: {project_root}")
                 return project_root
-            
             if directory_name == '':
                 print('Unable to find specified directory')
                 return None
-            
             else:
                 current_directory = os.path.dirname(current_directory)
                 continue
 
+    def select_file(self):
+        path = filedialog.askopenfilename(title="Select a file")
+        if path:
+            return os.path.abspath(path)
+        else:
+            return None
+
+    def select_folder(self):
+        path = filedialog.askdirectory(title="Select a folder")
+        if path:
+            return os.path.abspath(path)
+        else:
+            return None
 
 

@@ -2,6 +2,10 @@ import os
 import shutil
 
 class FolderOps():
+    def __init__(self):
+        self.root = None
+        pass
+
     def copy_folder(self, src: str = 'csv', dest: str = 'tmp'):
         source = os.path.join(self.root, src)
         destination = os.path.join(self.root, dest)
