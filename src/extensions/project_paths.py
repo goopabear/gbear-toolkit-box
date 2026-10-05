@@ -18,18 +18,15 @@ class ProjectPaths():
                 current_directory = os.path.dirname(current_directory)
                 continue
 
-    def select_file(self):
-        path = filedialog.askopenfilename(title="Select a file")
+    def user_select(self, type: str = 'file'):
+        if type == 'file':
+            path = filedialog.askopenfilename(title="Select a file")
+        elif type == 'folder':
+            path = filedialog.askdirectory(title="Select a folder")
         if path:
             return os.path.abspath(path)
         else:
             return None
 
-    def select_folder(self):
-        path = filedialog.askdirectory(title="Select a folder")
-        if path:
-            return os.path.abspath(path)
-        else:
-            return None
 
 

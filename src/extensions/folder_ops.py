@@ -2,6 +2,8 @@ import os
 import shutil
 
 class FolderOps():
+    root: str  # set by ProjectPaths in ProjectWorkspace
+
     def __init__(self):
         self.root = None
         pass
@@ -9,12 +11,10 @@ class FolderOps():
     def copy_folder(self, src: str = 'csv', dest: str = 'tmp'):
         source = os.path.join(self.root, src)
         destination = os.path.join(self.root, dest)
-
         try:
             shutil.copytree(source, destination)
             print(f"Files copied into new folder at:\n{os.path.basename(destination)}\n")
             return
-
         except Exception as e:
             print(f"Error copying CSV files: {e}\n")
             return
