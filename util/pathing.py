@@ -47,7 +47,7 @@ class ProjectWorkspace():
             return
 
     def delete_folder(self, folder: str):
-        tmp_folder = os.path.join(self.root, "tmp") 
+        tmp_folder = os.path.join(self.root, folder) 
         # Relative path from root to "tmp"
         # Can include additional arguments as steps up
         try:
