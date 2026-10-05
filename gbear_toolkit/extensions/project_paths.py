@@ -5,7 +5,7 @@ from tkinter import filedialog
 class ProjectPaths():
 
     def get_project_root(self, main_dir: str):
-        current_directory = os.path.dirname(__file__)
+        current_directory = os.getcwd()
         project_root = None
         while not project_root:
             directory_name = os.path.basename(current_directory)
