@@ -3,7 +3,7 @@ import shutil
 
 # User must pass the project folder name
 
-class ProjectWorkspace():
+class CSV_Tools():
     def __init__(self, main_dir: str = None):
         if main_dir is None:
             main_dir = os.path.basename(os.path.dirname((__file__)))
