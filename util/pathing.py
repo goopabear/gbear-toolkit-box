@@ -17,8 +17,6 @@ class ProjectWorkspace():
         project_root = None
         while not project_root:
             directory_name = os.path.basename(current_directory)
-            print(directory_name)
-
             if main_dir == directory_name:
                 project_root = current_directory
                 print(f"Project root found at: {project_root}")
