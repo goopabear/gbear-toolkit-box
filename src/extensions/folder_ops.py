@@ -4,10 +4,6 @@ import shutil
 class FolderOps():
     root: str  # set by ProjectPaths in ProjectWorkspace
 
-    def __init__(self):
-        self.root = None
-        pass
-
     def copy_folder(self, src: str = 'csv', dest: str = 'tmp'):
         source = os.path.join(self.root, src)
         destination = os.path.join(self.root, dest)
