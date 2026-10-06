@@ -4,7 +4,6 @@ import shutil
 class FolderOps():
     root: str  # set by ProjectPaths in ProjectWorkspace
 
-    
     def create_folder(self, folder: str = 'tmp', exist_ok: bool = True):
         new_folder = os.path.join(self.root, folder)
         try:

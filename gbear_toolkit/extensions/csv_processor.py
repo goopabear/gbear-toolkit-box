@@ -34,7 +34,7 @@ class CsvProcessor():
         except TypeError as t:
             print(t)
         else:
-            self.content = content
+            self.contents = content
 
     def write_csv(self, folder_path: str, prefix: str = 'file'):
         now = datetime.now()
