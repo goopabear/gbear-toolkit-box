@@ -38,7 +38,7 @@ class CsvProcessor():
 
     def write_csv(self, folder_path: str, prefix: str = 'file'):
         now = datetime.now()
-        time_str = now.strftime("-%Y_%m_%d_%H%M%S")
+        time_str = now.strftime("_%Y_%m_%d_%H%M%S")
         filename = prefix + time_str + '.csv'
         output_path = folder_path + os.sep + filename
 
