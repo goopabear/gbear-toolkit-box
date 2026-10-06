@@ -39,10 +39,11 @@ class CsvProcessor():
 
             # Get rows for only specified column headers
             for row in reader:
-                row_data = []
-                for col in cols:
-                    row_data.append(row[col])
-                self.contents.append(row_data)
+                if row: # Ignore blank rows
+                    row_data = []
+                    for col in cols:
+                        row_data.append(row[col])
+                    self.contents.append(row_data)
 
         # Return True once completed
         return True
