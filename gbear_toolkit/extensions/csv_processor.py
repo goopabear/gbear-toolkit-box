@@ -45,4 +45,4 @@ class CsvProcessor():
         with open(output_path, "w", newline="", encoding="utf-8-sig") as n:
             writer = csv.writer(n)
             writer.writerows(self.contents)
-        print('Operation Completed!')
+        print(f'[OUTPUT] Created {filename}')
