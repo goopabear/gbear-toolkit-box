@@ -4,6 +4,17 @@ import shutil
 class FolderOps():
     root: str  # set by ProjectPaths in ProjectWorkspace
 
+    
+    def create_folder(self, folder: str = 'tmp', exist_ok: bool = True):
+        new_folder = os.path.join(self.root, folder)
+        try:
+            os.makedirs(new_folder, exist_ok=exist_ok)
+            print(f"Folder created at:\n{os.path.basename(new_folder)}\n")
+            return new_folder
+        except Exception as e:
+            print(f"Error creating '{folder}' folder: {e}\n")
+            return None
+
     def copy_folder(self, src: str = 'csv', dest: str = 'tmp'):
         source = os.path.join(self.root, src)
         destination = os.path.join(self.root, dest)
