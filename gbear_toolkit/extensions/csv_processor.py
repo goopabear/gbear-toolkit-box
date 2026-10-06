@@ -8,13 +8,42 @@ class CsvProcessor():
     def __init__(self):
         self.contents = []
 
-    def load_csv(self, filepath) -> list:
+    def load_csv(self, filepath) -> bool:
         self.contents = []
         with open(filepath, "r", newline="", encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             for row in reader:
                 self.contents.append(row)
         return True
+
+    def load_csv_cols(self, filepath, *headers: str) -> bool:
+        self.contents = []
+
+        # Validate headers as strings then add as a column in output
+        cols = []
+        for h in headers:
+            if isinstance(h, str):
+                cols.append(h)
+            else:
+                raise TypeError('Headers must be strings!')
+
+        # Set headers
+        self.contents.append(cols)
+
+        # Get rows for only specified column headers
+        with open(filepath, "r", newline="", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f) # Assumes first row is headers
+            csv_headers = reader.fieldnames
+            
+            for row in reader:
+                row_data = []
+                for col in cols:
+                    row_data.append(row[col])
+                self.contents.append(row_data)
+
+        # Return True once completed
+        return True
+
 
     def _validate_csv(self, content) -> None:
         if not isinstance(content, list):
@@ -46,3 +75,13 @@ class CsvProcessor():
             writer = csv.writer(n)
             writer.writerows(self.contents)
         print(f'[OUTPUT] Created {filename}')
+
+
+if __name__ == "__main__":
+    def sample_csv_path() -> str:
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        return os.path.join(project_root, "samples", "sales.csv")
+
+    test = CsvProcessor()
+    test.load_csv_cols(sample_csv_path(), 'date', 'product')
+    print(test.contents)
