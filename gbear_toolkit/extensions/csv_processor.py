@@ -19,22 +19,24 @@ class CsvProcessor():
     def load_csv_cols(self, filepath, *headers: str) -> bool:
         self.contents = []
 
-        # Validate headers as strings then add as a column in output
-        cols = []
-        for h in headers:
-            if isinstance(h, str):
-                cols.append(h)
-            else:
-                raise TypeError('Headers must be strings!')
-
-        # Set headers
-        self.contents.append(cols)
-
-        # Get rows for only specified column headers
         with open(filepath, "r", newline="", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f) # Assumes first row is headers
             csv_headers = reader.fieldnames
-            
+
+            # Validate headers as strings then check if they exist in source CSV
+            # If so, add as a column in content output
+            cols = []
+            for h in headers:
+                if isinstance(h, str):
+                    if h in csv_headers:
+                        cols.append(h)
+                    else:
+                        print(f"[WARNING] Column {h!r} not found in source CSV. It will be excluded from output.")
+                else:
+                    raise TypeError('Headers must be strings!')
+            self.contents.append(cols)
+
+            # Get rows for only specified column headers
             for row in reader:
                 row_data = []
                 for col in cols:
@@ -83,5 +85,5 @@ if __name__ == "__main__":
         return os.path.join(project_root, "samples", "sales.csv")
 
     test = CsvProcessor()
-    test.load_csv_cols(sample_csv_path(), 'date', 'product')
+    test.load_csv_cols(sample_csv_path(), 'date', 'ns in paris','product')
     print(test.contents)
