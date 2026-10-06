@@ -11,10 +11,10 @@ class ProjectPaths():
             directory_name = os.path.basename(current_directory)
             if main_dir == directory_name:
                 project_root = current_directory
-                print(f"Project root found at: {project_root}")
+                print(f"[INFO] Project root initialized at: {project_root}")
                 return project_root
             if directory_name == '':
-                print('Unable to find specified directory')
+                print('[ERROR] Unable to find specified directory')
                 return None
             else:
                 current_directory = os.path.dirname(current_directory)
