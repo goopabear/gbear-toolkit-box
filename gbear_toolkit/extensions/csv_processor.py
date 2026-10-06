@@ -9,7 +9,6 @@ class CsvProcessor():
         self.contents = []
 
     def load_csv(self, filepath) -> list:
-        """Fills current contents from a CSV file"""
         self.contents = []
         with open(filepath, "r", newline="") as f:
             reader = csv.reader(f)
@@ -17,20 +16,27 @@ class CsvProcessor():
                 self.contents.append(row)
         return True
 
-    def load_from(self, content: list):
-        if isinstance(content, list):
-            for n_row, row in enumerate(content):
-                if isinstance(row, list):
-                    for n_col, element in enumerate(row):
-                        if not isinstance(element, (str, int, float, Decimal, date, type(None))):
-                            raise ValueError(f'[ERROR] Row {n_row}, column {n_col}: unsupported type!')
+    def _validate_csv(self, content) -> None:
+        if not isinstance(content, list):
+            raise TypeError(f'[ERROR] Content must be a list, got {type(content).__name__}')
 
+        for n_row, row in enumerate(content):
+            if not isinstance(row, list):
+                raise TypeError(f'[ERROR] Row {n_row} must be a list, got {type(row).__name__}')
+            else:
+                for n_col, element in enumerate(row):
+                    if not isinstance(element, (str, int, float, Decimal, date, type(None))):
+                        raise TypeError(f'Row {n_row}, column {n_col}: unsupported type {type(element).__name__}')
 
-        
-                  
+    def load_from(self, content: str):
+        try:
+            self._validate_csv(content)
+        except TypeError as t:
+            print(t)
+        else:
+            self.content = content
 
     def write_csv(self, folder_path: str, prefix: str = 'file'):
-
         now = datetime.now()
         time_str = now.strftime("-%Y_%m_%d_%H%M%S")
         filename = prefix + time_str + '.csv'
