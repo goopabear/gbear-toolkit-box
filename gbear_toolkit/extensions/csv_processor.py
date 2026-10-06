@@ -13,7 +13,8 @@ class CsvProcessor():
         with open(filepath, "r", newline="", encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             for row in reader:
-                self.contents.append(row)
+                if row: # Ignore blank rows
+                    self.contents.append(row)
         return True
 
     def load_csv_cols(self, filepath, *headers: str) -> bool:
