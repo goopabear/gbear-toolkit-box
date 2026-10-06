@@ -10,7 +10,7 @@ class CsvProcessor():
 
     def load_csv(self, filepath) -> list:
         self.contents = []
-        with open(filepath, "r", newline="") as f:
+        with open(filepath, "r", newline="", encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             for row in reader:
                 self.contents.append(row)
@@ -42,7 +42,7 @@ class CsvProcessor():
         filename = prefix + time_str + '.csv'
         output_path = folder_path + os.sep + filename
 
-        with open(output_path, "w", newline="") as n:
+        with open(output_path, "w", newline="", encoding="utf-8-sig") as n:
             writer = csv.writer(n)
             writer.writerows(self.contents)
         print('Operation Completed!')
