@@ -3,6 +3,10 @@ import tkinter as tk
 from tkinter import filedialog
 
 class ProjectPaths():
+    def __init__(self, main_dir: str):
+        self.root = self.get_project_root(main_dir)
+        if self.root is None:
+            raise FileNotFoundError(f"[ERROR] Could not find a '{main_dir}' folder at or above {os.getcwd()}")
     
     def get_project_root(self, main_dir: str):
         current_directory = os.getcwd()
@@ -19,6 +23,12 @@ class ProjectPaths():
             else:
                 current_directory = os.path.dirname(current_directory)
                 continue
+
+    def path_to(self, *steps):
+        path = os.path.join(self.root, *steps)
+        if not os.path.exists(path):
+            raise FileNotFoundError(path)
+        return os.path.abspath(path)
 
     def user_select(self, type: str = 'file'):
         root = tk.Tk()

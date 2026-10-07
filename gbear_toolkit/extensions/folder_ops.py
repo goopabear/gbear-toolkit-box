@@ -2,19 +2,18 @@ import os
 import shutil
 
 class FolderOps():
-    root: str  # set by ProjectPaths in ProjectWorkspace
 
-    def create_folder(self, folder: str = 'tmp', exist_ok: bool = True):
-        new_folder = os.path.join(self.root, folder)
+    def create(self, abs_path: str, name: str):
+        new_folder = os.path.join(abs_path, name)
         try:
-            os.makedirs(new_folder, exist_ok=exist_ok)
+            os.makedirs(new_folder)
             print(f"Folder created at:\n{os.path.basename(new_folder)}\n")
             return new_folder
         except Exception as e:
-            print(f"Error creating '{folder}' folder: {e}\n")
+            print(f"Error creating '{new_folder}' folder: {e}\n")
             return None
 
-    def copy_folder(self, src: str = 'csv', dest: str = 'tmp'):
+    def copy(self, src: str = 'csv', dest: str = 'tmp'):
         source = os.path.join(self.root, src)
         destination = os.path.join(self.root, dest)
         try:
@@ -25,7 +24,7 @@ class FolderOps():
             print(f"Error copying CSV files: {e}\n")
             return
 
-    def delete_folder(self, folder: str):
+    def delete(self, folder: str):
         tmp_folder = os.path.join(self.root, folder) 
         # Relative path from root to "tmp"
         # Can include additional arguments as steps up

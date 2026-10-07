@@ -1,12 +1,10 @@
 from .extensions import *
 
-import os
-
-class ProjectWorkspace(Extensions):
+class ProjectWorkspace():
     def __init__(self, main_dir: str):
-        super().__init__()
-        
-        self.root = self.get_project_root(main_dir)
-        if self.root is None:
-            raise FileNotFoundError(f"[ERROR] Could not find a '{main_dir}' folder at or above {os.getcwd()}")
+        self.path = ProjectPaths(main_dir)
+        self.folder = FolderOps()
+        self.csv = CsvProcessor()
+
+
 
