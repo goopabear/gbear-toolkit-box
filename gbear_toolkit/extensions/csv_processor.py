@@ -122,8 +122,9 @@ class CsvProcessor():
         # Update content with the filter
         self.contents = filtered_content
         return True
-    
 
+    # -----------------------------------------------------------------------------
+    # Other functions:
 
     def write_csv(self, folder_path: str, prefix: str = 'file'):
         now = datetime.now()
