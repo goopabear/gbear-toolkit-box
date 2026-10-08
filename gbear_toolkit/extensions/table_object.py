@@ -140,7 +140,7 @@ class Data_Object():
     # Other functions:
 
     # Use on unique target
-    def old_xlookup(self, target, id_header, data_header, csv_path=None):
+    def xlookup(self, target, id_header, data_header, csv_path=None):
         # If user points to a 
         if csv_path:
             with open(csv_path, "r", newline="", encoding="utf-8-sig") as f:
