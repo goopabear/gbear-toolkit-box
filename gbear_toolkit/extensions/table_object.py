@@ -2,7 +2,9 @@ from datetime import datetime, date
 from decimal import Decimal
 import csv, os
 
-class Data_Object():
+from table_functions import *
+
+class DataStorage():
     # -----------------------------------------------------------------------------
     # Object holds CSV contents. Starts as empty.
     # Each row will be stored as a dictionary where: key = column header, value = row value.
@@ -11,6 +13,7 @@ class Data_Object():
     def __init__(self):
         self.table: list = []
         self.headers: bool = False # If true, it means that table was written with headers
+        self.primary_key: str = None
 
     # This function assigns values to string objects pulled from CSVs.
     def _assigntype(self, value): 
@@ -138,41 +141,6 @@ class Data_Object():
     
     # -----------------------------------------------------------------------------
     # Other functions:
-
-    # Use on unique target
-    def xlookup(self, target, id_header, data_header, csv_path=None):
-        # If user points to a 
-        if csv_path:
-            with open(csv_path, "r", newline="", encoding="utf-8-sig") as f:
-                reader = csv.DictReader(f) # Assumes first row is headers
-                csv_headers = reader.fieldnames
-        else:
-            if not self.table:
-                raise ValueError('Object has an empty table')
-            
-            reader = self.table
-            csv_headers = []
-            for k in self.table[0].keys():
-                csv_headers.append(k)
-                
-            if len(csv_headers) <= 1:
-                raise KeyError('XLOOKUP requires at least 2 column headers!')
-            if not id_header in csv_headers:
-                raise KeyError(f'{id_header!r} not found in target CSV')
-            if not data_header in csv_headers:
-                raise KeyError(f'{data_header!r} not found in target CSV')
-
-        for row in reader:
-            if row[id_header] == target:
-                found = row[data_header]
-                if found:
-                    return found
-                else:
-                    return None
-            else:
-                print(f'[INFO] XLOOKUP could not find {target!r} in the {data_header!r} column')
-                return None
-
     # Assumes a list of dicts
     def write_csv(self, folder_path: str, prefix: str = 'file'):
         if not self.table:
@@ -196,10 +164,9 @@ class Data_Object():
 if __name__ == "__main__":
     def sample_csv_path() -> str:
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        return os.path.join(project_root, "samples", "sales.csv")
+        return os.path.join(project_root, "data", "sample_data.csv")
 
-    object = Data_Object()
+    object = DataStorage()
     object.load_csv(sample_csv_path())
-    z = object.old_xlookup(target='Widget A', id_header='product', data_header='revenue')
-    print(z)
+
 
