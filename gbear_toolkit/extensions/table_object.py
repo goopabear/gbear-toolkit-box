@@ -2,7 +2,7 @@ from datetime import datetime, date
 from decimal import Decimal
 import csv, os
 
-class CSV_Object():
+class Data_Object():
     # -----------------------------------------------------------------------------
     # Object holds CSV contents. Starts as empty.
     # Each row will be stored as a dictionary where: key = column header, value = row value.
@@ -11,6 +11,27 @@ class CSV_Object():
     def __init__(self):
         self.table: list = []
         self.headers: bool = False # If true, it means that table was written with headers
+
+    # This function assigns values to string objects pulled from CSVs.
+    def _assigntype(self, value): 
+        s = value.strip()
+
+        try:
+            return int(s)
+        except ValueError:
+            pass
+
+        try:
+            return float(s)
+        except ValueError:
+            pass
+
+        try:
+            return datetime.strptime(s, "%Y-%m-%d").date()
+        except ValueError:
+            pass
+
+        return value
 
     # -----------------------------------------------------------------------------
     # First, functions to get CSV contents
@@ -118,20 +139,57 @@ class CSV_Object():
     # -----------------------------------------------------------------------------
     # Other functions:
 
-    def xlookup(self, csv_path, header: str, row_value: str):
-        print()
+    # Use on unique target
+    def old_xlookup(self, target, id_header, data_header, csv_path=None):
+        # If user points to a 
+        if csv_path:
+            with open(csv_path, "r", newline="", encoding="utf-8-sig") as f:
+                reader = csv.DictReader(f) # Assumes first row is headers
+                csv_headers = reader.fieldnames
+        else:
+            if not self.table:
+                raise ValueError('Object has an empty table')
+            
+            reader = self.table
+            csv_headers = []
+            for k in self.table[0].keys():
+                csv_headers.append(k)
+                
+            if len(csv_headers) <= 1:
+                raise KeyError('XLOOKUP requires at least 2 column headers!')
+            if not id_header in csv_headers:
+                raise KeyError(f'{id_header!r} not found in target CSV')
+            if not data_header in csv_headers:
+                raise KeyError(f'{data_header!r} not found in target CSV')
 
+        for row in reader:
+            if row[id_header] == target:
+                found = row[data_header]
+                if found:
+                    return found
+                else:
+                    return None
+            else:
+                print(f'[INFO] XLOOKUP could not find {target!r} in the {data_header!r} column')
+                return None
 
-
+    # Assumes a list of dicts
     def write_csv(self, folder_path: str, prefix: str = 'file'):
+        if not self.table:
+            print('[OUTPUT] Table is empty, nothing written')
+            return
+
         now = datetime.now()
         time_str = now.strftime("_%Y_%m_%d_%H%M%S")
         filename = prefix + time_str + '.csv'
-        output_path = folder_path + os.sep + filename
+        output_path = os.path.join(folder_path, filename)
+
+        fieldnames = list(self.table[0].keys())
 
         with open(output_path, "w", newline="", encoding="utf-8-sig") as n:
-            writer = csv.writer(n)
-            writer.writerows(self.contents)
+            writer = csv.DictWriter(n, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(self.table)
         print(f'[OUTPUT] Created {filename}')
 
 
@@ -140,6 +198,8 @@ if __name__ == "__main__":
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         return os.path.join(project_root, "samples", "sales.csv")
 
-    object = CSV_Object()
+    object = Data_Object()
     object.load_csv(sample_csv_path())
-    print(object.table)
+    z = object.old_xlookup(target='Widget A', id_header='product', data_header='revenue')
+    print(z)
+
