@@ -1,3 +1,3 @@
-from .workspace import ProjectWorkspace
+from .workspace import Workspace
 
-__all__ = ['ProjectWorkspace']
+__all__ = ['Workspace']

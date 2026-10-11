@@ -1,10 +1,10 @@
-from .extensions import *
+from .core import *
 
-class ProjectWorkspace():
+class Workspace():
     def __init__(self, main_dir: str):
-        self.path = ProjectPaths(main_dir)
-        self.folder = FolderOps()
-        self.data = DataStorage()
+        self.paths = PathResolver(main_dir)
+        self.folders = FolderManager(self.paths.root)
+        self.table = Table()
 
 
 
