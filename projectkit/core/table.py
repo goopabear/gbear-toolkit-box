@@ -2,21 +2,21 @@ from datetime import datetime, date
 from decimal import Decimal
 import csv, os
 
-from table_functions import *
+from .lookup import *
 
-class DataStorage():
+class Table():
     # -----------------------------------------------------------------------------
     # Object holds CSV contents. Starts as empty.
     # Each row will be stored as a dictionary where: key = column header, value = row value.
     # Example -> [{'sku': '50000', 'price': 18.99},{'sku': '50001', 'price': 21.99}]
 
     def __init__(self):
-        self.table: list = []
-        self.headers: bool = False # If true, it means that table was written with headers
+        self.rows: list = []
+        self.has_headers: bool = False # If true, it means that table was written with headers
         self.primary_key: str = None
 
     # This function assigns values to string objects pulled from CSVs.
-    def _assigntype(self, value): 
+    def _coerce_type(self, value): 
         s = value.strip()
 
         try:
@@ -45,7 +45,7 @@ class DataStorage():
     # Content --> [[row1],[row2],[row3]] where each row = [element1,element2,element3]
 
     # Validates the data variable
-    def _validate_csv(self, content) -> None:
+    def _validate_rows(self, content) -> None:
         if not isinstance(content, list):
             raise TypeError(f'[ERROR] Content must be a list, got {type(content).__name__}')
 
@@ -59,51 +59,52 @@ class DataStorage():
 
     # If validation doesn't raise error, then assume content is in CSV format
     # If
-    def load_from(self, data: list, includes_headers=True) -> None:
+    def load_rows(self, rows: list, includes_headers=True) -> None:
         try:
-            self._validate_csv(data)
+            self._validate_rows(rows)
         except TypeError as t:
             print(t)
         else:
-            self.table = [] # Clear object keys
+            self.rows = [] # Clear object keys
             if includes_headers: 
             # Use headers as keys
                 headers = []
-                for header in data[0]:
+                for header in rows[0]:
                     headers.append(header)
                     
-                for row in data[1:]:
+                for row in rows[1:]:
+                    row_data = {}
                     for col, element in enumerate(row):
-                        row_data = {}
-                        row_data[header[col]] = element # Create one pair per element in row
-                    self.table.append(row_data)
-                    self.headers = True
+                        row_data[headers[col]] = element # Create one pair per element in row
+                    self.rows.append(row_data)
+                    self.has_headers = True
             else: 
             # Use column number as keys
-                for row in data:
+                for row in rows:
+                    row_data = {}
                     for col_num, element in enumerate(row, start=1):
-                        row_data = {}
                         row_data[col_num] = element # Create one pair per element in row
-                    self.table.append(row_data)
-                    self.headers = False
+                    self.rows.append(row_data)
+                    self.has_headers = False
 
     
     # Option 2: Load from CSV (Doesn't load data types!)
-    def load_csv(self, filepath, includes_headers=True, *headers: str) -> bool:
-        self.table = []
+    def read_csv(self, filepath, includes_headers=True, *headers: str) -> bool:
+        self.rows = []
 
         with open(filepath, "r", newline="", encoding="utf-8-sig") as f:
+            if not includes_headers: # If data doesn't include headers, substitute column number as the key.
+                for row in csv.reader(f):
+                    if row: # Ignore blank rows
+                        row_data = {}
+                        for col_num, element in enumerate(row, start=1):
+                            row_data[col_num] = element # Create one pair per element in row
+                        self.rows.append(row_data)
+                self.has_headers = False
+                return True
+
             reader = csv.DictReader(f) # Assumes first row is headers
             csv_headers = reader.fieldnames
-
-            if not includes_headers: # If data doesn't include headers, substitute column number as the key.
-                for row in reader:
-                    for col_num, element in enumerate(row, start=1):
-                        row_data = {}
-                        row_data[col_num] = element # Create one pair per element in row
-                    self.table.append(row_data)
-                    self.headers = False
-                return
 
             # Validate headers as strings then check if they exist in source CSV
             # If so, add as a column in table
@@ -133,8 +134,8 @@ class DataStorage():
                     for header, value in row.items():
                         if header in table_headers:
                             row_data[header] = value
-                    self.table.append(row_data)
-            self.headers = True
+                    self.rows.append(row_data)
+            self.has_headers = True
 
         # Return True once completed
         return True
@@ -143,7 +144,7 @@ class DataStorage():
     # Other functions:
     # Assumes a list of dicts
     def write_csv(self, folder_path: str, prefix: str = 'file'):
-        if not self.table:
+        if not self.rows:
             print('[OUTPUT] Table is empty, nothing written')
             return
 
@@ -152,12 +153,12 @@ class DataStorage():
         filename = prefix + time_str + '.csv'
         output_path = os.path.join(folder_path, filename)
 
-        fieldnames = list(self.table[0].keys())
+        fieldnames = list(self.rows[0].keys())
 
         with open(output_path, "w", newline="", encoding="utf-8-sig") as n:
             writer = csv.DictWriter(n, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerows(self.table)
+            writer.writerows(self.rows)
         print(f'[OUTPUT] Created {filename}')
 
 
@@ -166,7 +167,7 @@ if __name__ == "__main__":
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         return os.path.join(project_root, "data", "sample_data.csv")
 
-    object = DataStorage()
-    object.load_csv(sample_csv_path())
+    object = Table()
+    object.read_csv(sample_csv_path())
 
 
